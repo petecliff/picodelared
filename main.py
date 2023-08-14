@@ -87,8 +87,9 @@ def draw_startup():
     j.open_file("startup.jpg")
     j.decode(0, 0, jpegdec.JPEG_SCALE_FULL, dither=True)
 
+    display.set_pen(WHITE)
     display.set_font("cursive")
-    display.set_thickness(3)
+    display.set_thickness(2)
     display.text("pico de la red", 70, 35, scale=1, angle=90)
     display.update()
 
@@ -120,11 +121,8 @@ def draw_mix_1(gen_mix):
     display.update()
 
 def draw_mix_2(gen_mix):
-    clear_mix()
-    print(gen_mix)
-    
+    clear_mix()    
     y = 6
-
     for fuel in gen_mix:
         cval = math.floor(fuel['perc'])
         display.set_pen(pens[fuel['fuel']])
@@ -191,8 +189,6 @@ def set_time():
 draw_startup()
 
 connect()
-
-
 
 update_clock(0) # sets current time
 update_grid(0)
