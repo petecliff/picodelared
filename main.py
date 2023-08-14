@@ -170,7 +170,8 @@ def update_grid(timer):
     print("Getting grid")
     grid_status_res = read_grid_api(grid_mix_uri)
     set_intensity_led(grid_status_res['data'][0]['intensity'])
-    draw_mix_2(grid_status_res['data'][0]['generationmix'])
+    
+    draw_mix_1(grid_status_res['data'][0]['generationmix'])
     
 def set_time():
     time_set = False
