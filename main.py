@@ -49,11 +49,11 @@ PREV_TIME = "notset"
 MONTH_ABBR = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
 
 pens = {
-    "gas": INDIGO,
+    "gas": CYAN,
     "coal": RED,
     "biomass": BROWN,
     "nuclear": MAGENTA,
-    "hydro": CYAN,
+    "hydro": INDIGO,
     "imports": GREY,
     "other": PINK,
     "wind": GREEN,
