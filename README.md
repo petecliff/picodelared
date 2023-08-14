@@ -30,4 +30,3 @@ https://github.com/pimoroni/pimoroni-pico/blob/main/micropython/modules/picograp
 
 ## Startup Image
 It one I took on the way to Thurso. The A9 to Thurso from Inverness is pretty exciting for wind turbine fans... :-)
-
