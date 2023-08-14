@@ -5,8 +5,8 @@ A couple of years ago I made a Pi-based display to show the UK Grid Intensity an
 I made a new version now for a colleague of mine who is heading off to a new role. He likes microcontrollers so I made this version for a Pi Pico W and
 Pimoroni's fancy Pico Display.
 
-This is version 1 - it could do with a bit of work for error handling and maybe status updates on the screen (e.g. NTP failed or getting grid update).
-One day I'll try threading the two timers too (as currently the grid update blocks the time update) and maybe adding a button listener to change
+This is v0.1 - it could do with a bit of work for error handling and maybe status updates on the screen (e.g. NTP failed or getting grid update).
+One day I'll try threading the two timers too (as currently the grid update blocks the time update) or maybe adding a button listener to change
 the display (e.g. toggle 'tween display_mix_1 and display_mix_2).
 
 ## Getting this working
