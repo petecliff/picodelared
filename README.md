@@ -12,6 +12,8 @@ This is v0.1 - it could do with a bit of work for error handling and maybe statu
 One day I'll try threading the two timers too (as currently the grid update blocks the time update) or maybe adding a button listener to change
 the display (e.g. toggle 'tween display_mix_1 and display_mix_2). Probably some nicer things to add to the display too - e.g. the percent on the top of the bars.
 
+I read that Wifi probably needs some looking after - e.g. reconnect on drops and possibly only connect when needed to save energy.
+
 ## Getting this working
 If you've not already, get connection to the Pico working and flash the LED... :-)
 https://projects.raspberrypi.org/en/projects/getting-started-with-the-pico
@@ -34,4 +36,5 @@ and this is worth a read if you want to change the startup image:
 https://github.com/pimoroni/pimoroni-pico/blob/main/micropython/modules/picographics/README.md
 
 ## Startup Image
-It one I took on the way to Thurso. The A9 to Thurso from Inverness is pretty exciting for wind turbine fans... :-)
+I took the photo on the way to Thurso and did a bit of editing with GIMP. 
+The A9 to Thurso from Inverness is pretty exciting for wind turbine fans... :-)

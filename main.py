@@ -31,22 +31,14 @@ BLACK = display.create_pen(0, 0, 0)
 MAGENTA = display.create_pen(255, 33, 140)
 CYAN = display.create_pen(33, 177, 255)
 
-LED_INTENSITY_HIGH = ()
+LED_INTENSITY_HIGH = (1,0,0)
 LED_INTENSITY_MOD = (2,1,0)
 LED_INTENSITY_LOW = (0,1,0)
 
-connect_timeout = 30
-led = RGBLED(6, 7, 8)
-
-grid_mix_uri = "https://api.carbonintensity.org.uk/regional/regionid/12"
-
+DAY = 60000 * 60 * 24
 HALF_HOUR = 30 * 60000
 MINUTE = 60000
 SECOND = 1000
-
-PREV_TIME = "notset"
-
-MONTH_ABBR = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
 
 pens = {
     "gas": CYAN,
@@ -54,27 +46,38 @@ pens = {
     "biomass": BROWN,
     "nuclear": MAGENTA,
     "hydro": INDIGO,
-    "imports": GREY,
-    "other": PINK,
+    "imports": VIOLET,
+    "other": GREY,
     "wind": GREEN,
     "solar": YELLOW
 }
 
-mock_data = '{"data":[{"regionid":12,"dnoregion":"SSE South","shortname":"South England","data":[{"from":"2023-08-14T18:30Z","to":"2023-08-14T19:00Z","intensity":{"forecast":272,"index":"high"},"generationmix":[{"fuel":"biomass","perc":4.1},{"fuel":"coal","perc":2.6},{"fuel":"imports","perc":2.1},{"fuel":"gas","perc":61.5},{"fuel":"nuclear","perc":3.3},{"fuel":"other","perc":0},{"fuel":"hydro","perc":0.2},{"fuel":"solar","perc":4.2},{"fuel":"wind","perc":22.2}]}]}]}'
+month_abbr = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+
+grid_mix_uri = "https://api.carbonintensity.org.uk/regional/regionid/12"
+
+prev_time = "notset"
+
+connect_tries = 30
+
+led = RGBLED(6, 7, 8)
+
+# mock_data = '{"data":[{"regionid":12,"dnoregion":"SSE South","shortname":"South England","data":[{"from":"2023-08-14T18:30Z","to":"2023-08-14T19:00Z","intensity":{"forecast":272,"index":"high"},"generationmix":[{"fuel":"biomass","perc":4.1},{"fuel":"coal","perc":2.6},{"fuel":"imports","perc":2.1},{"fuel":"gas","perc":61.5},{"fuel":"nuclear","perc":3.3},{"fuel":"other","perc":0},{"fuel":"hydro","perc":0.2},{"fuel":"solar","perc":4.2},{"fuel":"wind","perc":22.2}]}]}]}'
 
 clock_timer = Timer()
 grid_timer = Timer()
+time_sync_timer = Timer()
 
 def connect():
-    led.set_rgb(255,0,0)
+    led.set_rgb(132,0,132)
     connect_count = 0
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid, password)
     while wlan.isconnected() == False:
-        if connect_count > connect_timeout:
-            raise Exception("Could not connect...")
-        print('Waiting for connection...')
+        if connect_count > connect_tries:
+            raise Exception("Could not connect wifi...")
+        print('Waiting for wifi connection...')
         sleep(1)
         connect_count += 1
     led.set_rgb(1,1,1)
@@ -146,11 +149,11 @@ def clear():
     display.update()
 
 def update_clock(timer):
-    global PREV_TIME
+    global prev_time
     now = time.localtime()
-    time_str = "{:02d} {} {} {:02d}:{:02d}".format(now[2], MONTH_ABBR[now[1]], now[0] - 2000,  now[3], now[4])
-    if PREV_TIME != time_str:
-        PREV_TIME = time_str
+    time_str = "{:02d} {} {} {:02d}:{:02d}".format(now[2], month_abbr[now[1]], now[0] - 2000,  now[3], now[4])
+    if prev_time != time_str:
+        prev_time = time_str
         clear_clock()
         display.set_font("sans")
         display.set_thickness(2)
@@ -173,7 +176,7 @@ def update_grid(timer):
     
     draw_mix_1(grid_status_res['data'][0]['generationmix'])
     
-def set_time():
+def sync_time():
     time_set = False
     tries = 10
     while time_set == False:
@@ -191,8 +194,11 @@ draw_startup()
 
 connect()
 
+sync_time()
+
 update_clock(0) # sets current time
 update_grid(0)
     
 clock_timer.init(period=SECOND, mode=Timer.PERIODIC, callback=update_clock)
 grid_timer.init(period=HALF_HOUR, mode=Timer.PERIODIC, callback=update_grid)
+time_sync_timer.init(period=DAY, mode=Timer.PERIODIC, callback=sync_time)
