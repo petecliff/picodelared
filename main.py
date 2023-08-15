@@ -1,6 +1,7 @@
 from machine import Pin, Timer
 from pimoroni import RGBLED
 from secrets import ssid, password
+from summertime import summerTime
 
 import picographics
 import jpegdec
@@ -15,6 +16,7 @@ import machine
 import urequests
 
 display = picographics.PicoGraphics(display=picographics.DISPLAY_PICO_DISPLAY)
+ntptime.host= "uk.pool.ntp.org"
 
 RED = display.create_pen(209, 34, 41)
 ORANGE = display.create_pen(246, 138, 30)
@@ -97,7 +99,7 @@ def draw_startup():
     display.update()
 
 def set_intensity_led(intensity):
-    print(intensity)
+    #print(intensity)
     intensity_index = intensity['index'].lower()
     if 'low' in intensity_index:
         led.set_rgb(0,1,0)
@@ -113,7 +115,7 @@ def set_intensity_led(intensity):
     
 def draw_mix_1(gen_mix):
     clear_mix()
-    print(gen_mix)
+    #print(gen_mix)
     dh = 135
     cstart = dh
     for fuel in gen_mix:
@@ -148,9 +150,15 @@ def clear():
     display.rectangle(0, 0, 135, 240)
     display.update()
 
-def update_clock(timer):
+def update_clock(timer):    
     global prev_time
-    now = time.localtime()
+    
+    curr_time = time.time()
+    if summerTime(time.localtime(curr_time)):
+        curr_time = curr_time + 3600
+    
+    now = time.localtime(curr_time)
+    
     time_str = "{:02d} {} {} {:02d}:{:02d}".format(now[2], month_abbr[now[1]], now[0] - 2000,  now[3], now[4])
     if prev_time != time_str:
         prev_time = time_str
@@ -164,19 +172,18 @@ def update_clock(timer):
 def read_grid_api(grid_mix_uri):
     r = urequests.get(grid_mix_uri)
     res = json.loads(r.content)
-    print(res)
-#    res = json.loads(mock_data)
+    #print(res)
     r.close()
     return res['data'][0]
 
 def update_grid(timer):
-    print("Getting grid")
+    #print("Getting grid")
     grid_status_res = read_grid_api(grid_mix_uri)
     set_intensity_led(grid_status_res['data'][0]['intensity'])
     
     draw_mix_1(grid_status_res['data'][0]['generationmix'])
     
-def sync_time():
+def sync_time(timer):
     time_set = False
     tries = 10
     while time_set == False:
@@ -188,14 +195,13 @@ def sync_time():
             ntptime.settime()
             time_set = True
         except Exception as e:
-            print(e)
+            print(e)        
         
 draw_startup()
 
 connect()
 
-sync_time()
-
+sync_time(0)
 update_clock(0) # sets current time
 update_grid(0)
     
