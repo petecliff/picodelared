@@ -18,6 +18,8 @@ I read that Wifi probably needs some looking after - e.g. reconnect on drops and
 If you've not already, get connection to the Pico working and flash the LED... :-)
 https://projects.raspberrypi.org/en/projects/get-started-pico-w
 
+After setting up the pi ensure you go and install the custom pimoroni firmware which will include the libraries needed for the display - https://github.com/pimoroni/pimoroni-pico#micropython
+
 With Thonny setup, create a new folder with the content of this repo in it. Then copy `secrets.template.py` to `secrets.py` and put your wifi deets in.
 
 Next check `main.py` and update the grid API URI to reflect your region - see https://carbon-intensity.github.io/api-definitions/#region-list for a list and
