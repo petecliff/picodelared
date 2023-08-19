@@ -16,7 +16,7 @@ I read that Wifi probably needs some looking after - e.g. reconnect on drops and
 
 ## Getting this working
 If you've not already, get connection to the Pico working and flash the LED... :-)
-https://projects.raspberrypi.org/en/projects/getting-started-with-the-pico
+https://projects.raspberrypi.org/en/projects/get-started-pico-w
 
 With Thonny setup, create a new folder with the content of this repo in it. Then copy `secrets.template.py` to `secrets.py` and put your wifi deets in.
 
