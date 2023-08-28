@@ -207,17 +207,21 @@ def sync_time(timer):
             print(e)
 
 def button_check(timer):
+    global displayType
+    
     if button_a.read():
+        displayType = 0
         clear_mix()
         grid_status_res = read_grid_api(grid_mix_uri)
         set_intensity_led(grid_status_res['data'][0]['intensity'])
-        draw_mix(grid_status_res['data'][0]['generationmix'], displayType=0)
+        draw_mix(grid_status_res['data'][0]['generationmix'], displayType=displayType)
 
     if button_b.read():
+        displayType = 1
         clear_mix()
         grid_status_res = read_grid_api(grid_mix_uri)
         set_intensity_led(grid_status_res['data'][0]['intensity'])
-        draw_mix(grid_status_res['data'][0]['generationmix'], displayType=1)
+        draw_mix(grid_status_res['data'][0]['generationmix'], displayType=displayType)
         
 draw_startup()
 
