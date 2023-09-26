@@ -1,5 +1,5 @@
 from machine import Pin, Timer
-from pimoroni import RGBLED
+from pimoroni import RGBLED, Button
 from secrets import ssid, password
 from summertime import summerTime
 
@@ -42,6 +42,13 @@ HALF_HOUR = 30 * 60000
 MINUTE = 60000
 SECOND = 1000
 
+button_a = Button(12)
+button_b = Button(13)
+button_x = Button(14)
+button_y = Button(15)
+
+displayType = 0
+
 pens = {
     "gas": CYAN,
     "coal": RED,
@@ -69,6 +76,7 @@ led = RGBLED(6, 7, 8)
 clock_timer = Timer()
 grid_timer = Timer()
 time_sync_timer = Timer()
+button_timer = Timer()
 
 def connect():
     led.set_rgb(132,0,132)
@@ -113,27 +121,28 @@ def set_intensity_led(intensity):
     led.set_rgb(1,1,1)
     return
     
-def draw_mix_1(gen_mix):
-    clear_mix()
-    #print(gen_mix)
-    dh = 135
-    cstart = dh
-    for fuel in gen_mix:
-        cval = math.floor(fuel['perc'])
-        cstart = cstart - cval
-        display.set_pen(pens[fuel['fuel']])
-        display.rectangle(cstart, 0, cval, 240)
-    display.update()
+def draw_mix(gen_mix, displayType):
+    if displayType == 0:
+        clear_mix()
+        #print(gen_mix)
+        dh = 135
+        cstart = dh
+        for fuel in gen_mix:
+            cval = math.floor(fuel['perc'])
+            cstart = cstart - cval
+            display.set_pen(pens[fuel['fuel']])
+            display.rectangle(cstart, 0, cval, 240)
+        display.update()
 
-def draw_mix_2(gen_mix):
-    clear_mix()    
-    y = 6
-    for fuel in gen_mix:
-        cval = math.floor(fuel['perc'])
-        display.set_pen(pens[fuel['fuel']])
-        display.rectangle(32, y, cval, 20)
-        y = y + 26
-    display.update()
+    if displayType == 1:
+        clear_mix()    
+        y = 6
+        for fuel in gen_mix:
+            cval = math.floor(fuel['perc'])
+            display.set_pen(pens[fuel['fuel']])
+            display.rectangle(32, y, cval, 20)
+            y = y + 26
+        display.update()
 
 def clear_clock():
     display.set_pen(BLACK)
@@ -181,7 +190,7 @@ def update_grid(timer):
     grid_status_res = read_grid_api(grid_mix_uri)
     set_intensity_led(grid_status_res['data'][0]['intensity'])
     
-    draw_mix_1(grid_status_res['data'][0]['generationmix'])
+    draw_mix(grid_status_res['data'][0]['generationmix'], displayType=displayType)
     
 def sync_time(timer):
     time_set = False
@@ -195,7 +204,24 @@ def sync_time(timer):
             ntptime.settime()
             time_set = True
         except Exception as e:
-            print(e)        
+            print(e)
+
+def button_check(timer):
+    global displayType
+    
+    if button_a.read():
+        displayType = 0
+        clear_mix()
+        grid_status_res = read_grid_api(grid_mix_uri)
+        set_intensity_led(grid_status_res['data'][0]['intensity'])
+        draw_mix(grid_status_res['data'][0]['generationmix'], displayType=displayType)
+
+    if button_b.read():
+        displayType = 1
+        clear_mix()
+        grid_status_res = read_grid_api(grid_mix_uri)
+        set_intensity_led(grid_status_res['data'][0]['intensity'])
+        draw_mix(grid_status_res['data'][0]['generationmix'], displayType=displayType)
         
 draw_startup()
 
@@ -208,3 +234,4 @@ update_grid(0)
 clock_timer.init(period=SECOND, mode=Timer.PERIODIC, callback=update_clock)
 grid_timer.init(period=HALF_HOUR, mode=Timer.PERIODIC, callback=update_grid)
 time_sync_timer.init(period=DAY, mode=Timer.PERIODIC, callback=sync_time)
+button_timer.init(period=500, mode=Timer.PERIODIC, callback=button_check)
